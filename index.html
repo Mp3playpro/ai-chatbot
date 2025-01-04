@@ -1,0 +1,606 @@
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Easy-to-Use AI Chatbot</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --primary-bg: #343541;
+    --secondary-bg: #444654;
+    --text-color: #ECECF1;
+    --input-bg: #40414F;
+    --border-color: #565869;
+    --accent-color: #10A37F;
+    --border-radius: 12px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.6;
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 1rem;
+}
+
+.chat-header {
+    padding: 1rem;
+    background-color: var(--secondary-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-radius: var(--border-radius);
+    margin: 0.1rem 0;
+}
+
+.chat-header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.model-selector {
+    background: var(--input-bg);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    padding: 0.7rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 150px;
+}
+
+.model-selector:hover {
+    border-color: var(--accent-color);
+}
+
+.model-selector:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.2);
+}
+
+#chatbox {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    scroll-behavior: smooth;
+}
+
+.message {
+    padding: 1.5rem;
+    animation: fadeIn 0.3s ease;
+    margin: 0.5rem 0;
+    border-radius: var(--border-radius);
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
+
+.user-message {
+    background-color: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.ai-message {
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    margin-right: auto;
+    margin-left: 0;
+}
+
+.ai-message h1, 
+.ai-message h2, 
+.ai-message h3 {
+    margin: 1rem 0 0.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.ai-message h1 {
+    font-size: 1.5rem;
+}
+
+.ai-message h2 {
+    font-size: 1.3rem;
+}
+
+.ai-message h3 {
+    font-size: 1.1rem;
+}
+
+.ai-message ul,
+.ai-message ol {
+    margin: 0.5rem 0 0.5rem 1.5rem;
+}
+
+.ai-message li {
+    margin: 0.3rem 0;
+}
+
+.ai-message p {
+    margin: 0.5rem 0;
+}
+
+.input-container {
+    position: sticky;
+    bottom: 0;
+    padding: 1rem;
+    background-color: var(--primary-bg);
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+    width: 100%;
+    z-index: 10;
+}
+
+.input-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-direction: row-reverse;
+}
+
+#userInput {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background-color: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    font-size: 1rem;
+    resize: none;
+    min-height: 50px;
+    max-height: 200px;
+    transition: var(--transition);
+}
+
+#userInput:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.2);
+}
+
+#sendButton {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+#sendButton:hover {
+    background-color: #0F916F;
+    transform: translateY(-2px);
+}
+
+#sendButton:active {
+    transform: translateY(0);
+}
+
+.voice-button {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    padding: 0.7rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.voice-button:hover {
+    border-color: var(--accent-color);
+    background-color: var(--accent-color);
+}
+
+.voice-button.recording {
+    background-color: #FF4B4B;
+    border-color: #FF4B4B;
+    animation: pulse 1.5s infinite;
+}
+
+.typing-indicator {
+    padding: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    background-color: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    width: fit-content;
+}
+
+.dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: var(--text-color);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite;
+}
+
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-8px); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.error-message {
+    color: #FF4B4B;
+    background-color: rgba(255, 75, 75, 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin: 1rem;
+    text-align: center;
+}
+
+.message-container {
+    position: relative;
+    width: 100%;
+}
+
+.copy-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.message-container:hover .copy-button {
+    opacity: 1;
+}
+
+.copy-button:hover {
+    background: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+    .chat-container {
+        padding: 0 0.5rem;
+    }
+    
+    .chat-header {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .message {
+        padding: 1rem;
+    }
+    
+    .input-container {
+        padding: 1rem 0.5rem;
+    }
+    
+    .input-wrapper {
+        flex-direction: row-reverse;
+        gap: 0.5rem;
+    }
+    
+    #sendButton {
+        padding: 0.7rem;
+    }
+    
+    .model-selector {
+        width: 100%;
+    }
+    
+    .ai-message h1 {
+        font-size: 1.3rem;
+    }
+    
+    .ai-message h2 {
+        font-size: 1.1rem;
+    }
+    
+    .ai-message h3 {
+        font-size: 1rem;
+    }
+    
+    .ai-message ul,
+    .ai-message ol {
+        margin-left: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .message {
+        padding: 0.8rem;
+    }
+    
+    #userInput {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+        height: 45px;
+    }
+    
+    #sendButton {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .voice-button {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .copy-button {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .voice-button {
+        padding: 0.5rem;
+    }
+    
+    .voice-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    #sendButton {
+        width: 40px;
+        height: 40px;
+        padding: 0.6rem;
+    }
+    
+    .voice-button {
+        width: 40px;
+        height: 40px;
+        padding: 0.5rem;
+    }
+    
+    #sendButton svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .chat-container {
+        max-width: 90%;
+    }
+    
+    .message {
+        max-width: 90%;
+    }
+}
+
+@media (max-height: 600px) {
+    .chat-header {
+        padding: 0.8rem;
+    }
+    
+    #chatbox {
+        padding: 1rem 0;
+    }
+    
+    .input-container {
+        padding: 0.8rem;
+    }
+}
+</style>
+</head>
+<body>
+<div class="chat-container" style="min-height: 100vh;">
+    <div class="chat-header">
+        <h1>AI Assistant by sOmi</h1>
+        <select id="modelSelect" class="model-selector">
+            <option value="https://api.paxsenix.biz.id/ai/gpt4?text=">GPT-4 TURBO</option>
+            <option value="https://api.paxsenix.biz.id/ai/claude?text=">Claude</option>
+            <option value="https://api.paxsenix.biz.id/ai/gemini?text=">Gemini</option>
+            <option value="https://api.paxsenix.biz.id/ai/gpt4omini?text=">GPT-MINI</option>
+            <option value="https://api.paxsenix.biz.id/ai/gpt4o?text=">GPT-4O</option>
+        </select>
+    </div>
+    <div id="chatbox"></div>
+    <div class="input-container">
+        <div class="input-wrapper">
+            <button id="sendButton">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+            <button id="voiceButton" class="voice-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+            </button>
+            <input type="text" id="userInput" placeholder="Type your message here..." autocomplete="off">
+        </div>
+    </div>
+</div>
+
+<script>const chatbox = document.getElementById('chatbox');
+const userInput = document.getElementById('userInput');
+const sendButton = document.getElementById('sendButton');
+const modelSelect = document.getElementById('modelSelect');
+const voiceButton = document.getElementById('voiceButton');
+function createTypingIndicator() {
+  return `<div class="typing-indicator">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>`;
+}
+function createMessageElement(message, isUser) {
+  if (!isUser) {
+    message = message.replace(/^### (.*$)/gm, '<h3>$1</h3>').replace(/^## (.*$)/gm, '<h2>$1</h2>').replace(/^# (.*$)/gm, '<h1>$1</h1>').replace(/(?:^|\n)([*-] .+)/g, '\n<ul><li>$1</li></ul>').replace(/<\/ul>\n<ul>/g, '');
+  }
+  return `<div class="message-container" style="max-width: min(800px, 90%);">
+        <div class="message ${isUser ? 'user-message' : 'ai-message'}">${message}</div>
+        ${!isUser ? `<button class="copy-button" onclick="copyMessage(this)">Copy</button>` : ''}
+    </div>`;
+}
+function copyMessage(button) {
+  const messageText = button.parentElement.querySelector('.message').textContent;
+  navigator.clipboard.writeText(messageText).then(() => {
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 2000);
+  });
+}
+async function sendMessage() {
+  const userMessage = userInput.value.trim();
+  if (!userMessage) return;
+  chatbox.innerHTML += createMessageElement(userMessage, true);
+  userInput.value = '';
+  userInput.style.height = 'auto';
+  chatbox.innerHTML += createTypingIndicator();
+  chatbox.scrollTop = chatbox.scrollHeight;
+  const selectedModel = modelSelect.value;
+  try {
+    const response = await fetch(`${selectedModel}${encodeURIComponent(userMessage)}`);
+    const typingIndicator = chatbox.querySelector('.typing-indicator');
+    if (typingIndicator) typingIndicator.remove();
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+    if (data.ok) {
+      chatbox.innerHTML += createMessageElement(data.message, false);
+    } else {
+      throw new Error("AI response was not successful.");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    chatbox.innerHTML += `<div class="error-message">Error: Unable to get response. Please try again later.</div>`;
+  }
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+let recognition = null;
+if ('webkitSpeechRecognition' in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+  recognition.onresult = function (event) {
+    const text = event.results[0][0].transcript;
+    userInput.value = text;
+    voiceButton.classList.remove('recording');
+  };
+  recognition.onerror = function (event) {
+    console.error('Speech recognition error:', event.error);
+    voiceButton.classList.remove('recording');
+  };
+  recognition.onend = function () {
+    voiceButton.classList.remove('recording');
+  };
+}
+voiceButton.addEventListener('click', () => {
+  if (!recognition) {
+    alert('Speech recognition is not supported in your browser.');
+    return;
+  }
+  if (voiceButton.classList.contains('recording')) {
+    recognition.stop();
+  } else {
+    recognition.start();
+    voiceButton.classList.add('recording');
+  }
+});
+sendButton.addEventListener('click', sendMessage);
+userInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+userInput.addEventListener('input', () => {
+  userInput.style.height = 'auto';
+  userInput.style.height = userInput.scrollHeight + 'px';
+  const inputHeight = userInput.offsetHeight;
+  sendButton.style.height = `${inputHeight}px`;
+  sendButton.style.width = `${inputHeight}px`;
+  voiceButton.style.height = `${inputHeight}px`;
+  voiceButton.style.width = `${inputHeight}px`;
+});
+window.addEventListener('load', () => {
+  chatbox.innerHTML = createMessageElement('👋 Hello! I\'m your AI assistant. How can I help you today?', false);
+  const matchButtonHeights = () => {
+    const inputHeight = userInput.offsetHeight;
+    sendButton.style.height = `${inputHeight}px`;
+    sendButton.style.width = `${inputHeight}px`;
+    voiceButton.style.height = `${inputHeight}px`;
+    voiceButton.style.width = `${inputHeight}px`;
+  };
+  matchButtonHeights();
+  window.addEventListener('resize', matchButtonHeights);
+  window.addEventListener('resize', () => {
+    const header = document.querySelector('.chat-header');
+    const input = document.querySelector('.input-container');
+    const availableHeight = window.innerHeight;
+    const headerHeight = header.offsetHeight;
+    const inputHeight = input.offsetHeight;
+    chatbox.style.height = `${availableHeight - headerHeight - inputHeight - 40}px`;
+  });
+  window.dispatchEvent(new Event('resize'));
+});</script>
+</body></html>
